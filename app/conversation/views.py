@@ -97,7 +97,8 @@ def get_reports(request, date):
         )
 
         serializer = DayReportSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_data = serializer.data
+        return Response(response_data, status=status.HTTP_200_OK)
     
     except Exception as e:
         response_data = {'error': e}
@@ -117,7 +118,8 @@ def get_week_report(request, start):
         )
 
         serializer = WeekReportSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_data = serializer.data
+        return Response(response_data, status=status.HTTP_200_OK)
     
     except Exception as e:
         response_data = {'error': e}

@@ -83,7 +83,8 @@ def create_family(request):
             user = request.user
             serializer.create(user=user)
             family = Family.objects.get(senior_id=user.id)
-            response_data = {'id': family.id, 'family': serializer.data}
+            response_data = serializer.data
+            response_data['id'] = family.id
             return Response(response_data, status=status.HTTP_201_CREATED)
         
         response_data = {'error': serializer.errors}

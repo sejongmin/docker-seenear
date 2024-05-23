@@ -14,7 +14,7 @@ event_detail = EventViewSet.as_view({
 })
 
 urlpatterns = [
-    path('create/', create_event, name="event-create"),
-    path('<date:date>/', get_events, name="event-get"),
-    path("<int:pk>/", event_detail, name="event-detail"),
+    path('create', create_event, name="event-create"),
+    path('<date:date>', get_events, name="event-get"),
+    path("<int:pk>", event_detail, name="event-detail"),
 ]

@@ -31,11 +31,12 @@ def get_events(request, date):
             Q(family_id=request.user.family_id) &
             Q(datetime__date=date)
         )
+        serializer = EventSerializer(queryset, many=True)
+        response_data = serializer.data
+        return Response(response_data, status=status.HTTP_200_OK)
     except Exception:
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
-    serializer = EventSerializer(queryset, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
 
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()

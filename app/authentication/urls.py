@@ -16,9 +16,18 @@ router.register("user", UserViewSet)
 
 urlpatterns = [
     path("user/signup", signup),
+    path("user/signup/", signup),
+
     path("user/login", login),
+    path("user/login/", login),
+    
     path("user/logout", logout),
+    path("user/logout/", logout),
+
     path('family/join', join_family),
+    path('family/join/', join_family),
+
     path('family/create', create_family),
+    path('family/create/', create_family),
     path("", include(router.urls)),
 ]

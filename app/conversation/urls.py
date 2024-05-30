@@ -5,6 +5,11 @@ from .views import *
 register_converter(DateConverter, "date")
 register_converter(YearMonthConverter, "year-month")
 
+post_detail = PostViewSet.as_view({
+    "get": "retrieve",
+    "delete": "destroy"
+})
+
 urlpatterns = [
     path('posts/create', create_post, name="create-post"),
     path('posts/create/', create_post, name="create-post"),
@@ -12,6 +17,8 @@ urlpatterns = [
     path('posts/update/<int:pk>/', update_post, name="update-post"),
     path("posts/<date:date>", get_posts, name="get-posts"),
     path("posts/<date:date>/", get_posts, name="get-posts"),
+    path("posts/<int:pk>", post_detail, name="post-detail"),
+    path("posts/<int:pk>/", post_detail, name="post-detail"),
 
     path("day/<date:date>", get_report, name="get-day"),
     path("day/<date:date>/", get_report, name="get-day"),

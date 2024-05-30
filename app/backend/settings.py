@@ -30,8 +30,6 @@ DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = ['*']
 
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', default="")
-
 # Application definition
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -44,7 +42,6 @@ REST_FRAMEWORK = {
 INSTALLED_APPS = [
     'authentication',
     'conversation',
-    'chatbot',
     'events',
     'rest_framework',
     'rest_framework.authtoken',

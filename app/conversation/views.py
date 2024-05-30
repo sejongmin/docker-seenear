@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import calendar
 import datetime
 from django.db.models import Q
@@ -9,9 +10,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Post, DayReport
 from .serializers import PostSerializer, DayReportSerializer
-
-from .functions.keyword_extraction import *
-from .functions.emotion_classification import *
 from constant.conversation import *
 
 @api_view(["GET"])
@@ -40,9 +38,7 @@ def update_post(request, pk):
         keyword = [("안녕"),  ("반가워"), ("오랜만이네")]
         emotion = [[0.1, 0.2, 0.3, 0.4]]
         # keyword = keyword_extraction()
-        # print(keyword)
         # emotion = emotion_classification(AUDIO_INPUT_WAV_PATH)
-        # print(emotion)
         # os.remove(TEXT_PATH)
         # os.remove(AUDIO_INPUT_WAV_PATH)
         # os.remove(AUDIO_INPUT_WEBM_PATH)
@@ -52,7 +48,6 @@ def update_post(request, pk):
             "emotion": emotion,
             "keyword": keyword
         }
-        # print(data)
         
         postSerializer.update(post=post, data=data)
         reportSerializer = DayReportSerializer()

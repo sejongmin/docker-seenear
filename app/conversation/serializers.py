@@ -1,6 +1,5 @@
 import numpy as np
 from datetime import datetime, timedelta
-from django.db.models import Q
 from rest_framework import serializers
 from .models import Post, DayReport
 from .functions.emotion_calulation import updateEmotionMean

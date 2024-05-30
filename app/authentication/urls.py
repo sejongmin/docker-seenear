@@ -4,7 +4,7 @@ from .views import *
 
 router = DefaultRouter()
 routin_detail = RoutinViewSet.as_view({
-    "get": "retrive",
+    "get": "retrieve",
     "put": "update",
     "delete": "destroy"
 })

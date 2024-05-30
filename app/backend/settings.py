@@ -30,6 +30,8 @@ DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = ['*']
 
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', default="")
+
 # Application definition
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -42,6 +44,7 @@ REST_FRAMEWORK = {
 INSTALLED_APPS = [
     'authentication',
     'conversation',
+    'chatbot',
     'events',
     'rest_framework',
     'rest_framework.authtoken',
@@ -89,12 +92,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-SQL_ENGINE=os.environ.get("SQL_ENGINE")
-SQL_NAME=os.environ.get("SQL_NAME")
-SQL_USER=os.environ.get("SQL_USER")
-SQL_PASSWORD=os.environ.get("SQL_PASSWORD")
-SQL_HOST=os.environ.get("SQL_HOST")
-SQL_PORT=os.environ.get("SQL_PORT")
+SQL_ENGINE=os.environ.get("SQL_ENGINE", default='django.db.backends.sqlite3')
+SQL_NAME=os.environ.get("SQL_NAME", default=BASE_DIR / 'db.sqlite3')
+SQL_USER=os.environ.get("SQL_USER", default='')
+SQL_PASSWORD=os.environ.get("SQL_PASSWORD", default='')
+SQL_HOST=os.environ.get("SQL_HOST", default='')
+SQL_PORT=os.environ.get("SQL_PORT", default='')
 
 DATABASES = {
     'default': {
@@ -104,7 +107,7 @@ DATABASES = {
         'PASSWORD': SQL_PASSWORD,
         'HOST': SQL_HOST,
         'PORT': SQL_PORT,
-        'OPTIONS': {"charset": "utf8mb4"}
+        # 'OPTIONS': {"charset": "utf8mb4"}
     }
 }
 

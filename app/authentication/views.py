@@ -5,29 +5,35 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Family
-from .serializers import UserSerializer, FamilySerializer
+from .models import User, Family, Routin
+from .serializers import UserSerializer, FamilySerializer, MemberSerializer, RoutinSerializer
 from constant.authentication import *
 
 @api_view(['POST'])
 def signup(request):
     try:
-        serializer = UserSerializer(data=request.data)
+        userSerializer = UserSerializer(data=request.data)
         username = request.data.get('username')
 
-        if serializer.is_valid():
-            serializer.save()
+        if userSerializer.is_valid():
+            userSerializer.save()
             user = User.objects.get(username=username)
             token = Token.objects.get(user=user)
-
-            response_data = {'user': serializer.data, 'token': token.key}
+            response_data = {'user': userSerializer.data, 'token': token.key}
+            if user.is_senior:
+                familySerializer = FamilySerializer()
+                familySerializer.create(user=user)
+                family = Family.objects.get(senior_id=user.id)
+                data={"family_id": family.id, "role": DEFAULT_ROLE}
+                userSerializer.join(user=user, data=data)
+                response_data['family_id'] = family.id
             return Response(response_data, status=status.HTTP_201_CREATED)
         
-        response_data = {'error': serializer.errors}
+        response_data = {'error': userSerializer.errors}
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
     
     except Exception as e:
-        response_data = {'error': e}
+        response_data = {'error': str(e)}
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -40,19 +46,23 @@ def login(request):
         if authenticate_user is not None:
             user = User.objects.get(username=username)
             token, created_token = Token.objects.get_or_create(user=user)
-
             if token:
                 response_data = {'token': token.key}
             elif created_token: 
                 response_data = {'token': created_token.key}
 
+            response_data['is_senior'] = user.is_senior
+
+            if user.is_senior:
+                family = Family.objects.get(senior_id=user.id)
+                response_data['family_id'] = family.id
             return Response(response_data, status=status.HTTP_202_ACCEPTED)
         
         response_data = {'error': USER_ERROR_MESSAGE}
         return Response(response_data, status=status.HTTP_404_NOT_FOUND)
     
     except Exception as e:
-        response_data = {'error': e}
+        response_data = {'error': str(e)}
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET"])
@@ -60,38 +70,11 @@ def login(request):
 @permission_classes([IsAuthenticated])
 def logout(request):
     try:
-        if request.user:
-            request.user.auth_token.delete()
-            response_data = {'message': LOGOUT_SUCCESS_MESSAGE}
-            return Response(response_data, status=status.HTTP_200_OK)
-        
-        response_data = {'error': USER_ERROR_MESSAGE}
-        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-    
+        request.user.auth_token.delete()
+        response_data = {'message': LOGOUT_SUCCESS_MESSAGE}
+        return Response(response_data, status=status.HTTP_200_OK)
     except Exception as e:
-        response_data = {'error': e}
-        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['POST'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def create_family(request):
-    try:
-        serializer = FamilySerializer(data=request.data)
-
-        if serializer.is_valid():
-            user = request.user
-            serializer.create(user=user)
-            family = Family.objects.get(senior_id=user.id)
-            response_data = serializer.data
-            response_data['id'] = family.id
-            return Response(response_data, status=status.HTTP_201_CREATED)
-        
-        response_data = {'error': serializer.errors}
-        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-    
-    except Exception as e:
-        response_data = {'error': e}
+        response_data = {'error': str(e)}
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
@@ -101,14 +84,92 @@ def join_family(request):
     try:
         serializer = UserSerializer()
         serializer.join(user=request.user, data=request.data)
-
-        response_data = {'message': JOIN_FAMILY_SUCCESS_MESSAGE}
-        return Response(response_data, status=status.HTTP_200_OK)
-    
+        response_data = {'message': JOIN_SUCCESS_MESSAGE}
+        return Response(response_data, status=status.HTTP_202_ACCEPTED)
     except Exception as e:
-        response_data = {'error': e}
+        response_data = {'error': str(e)}
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
     
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_family(request):
+    try:
+        serializer = FamilySerializer(request.user.family_id)
+        response_data = serializer.data
+        return Response(response_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        response_data = {'error': str(e)}
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['PUT'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_family(request):
+    try:
+        family = Family.objects.get(id=request.user.family_id)
+        serializer = FamilySerializer()
+        serializer.update(family=family, data=request.data)
+        response_data = {"message": UPDATE_SUCCESS_MESSAGE}
+        return Response(response_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        response_data = {'error': str(e)}
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_members(request):
+    try:
+        queryset = User.objects.filter(family_id=request.user.family_id)
+        serializer = MemberSerializer(queryset, many=True)
+        response_data = serializer.data
+        return Response(response_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        response_data = {'error': str(e)}
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_routins(request):
+    try:
+        queryset = Routin.objects.filter(family_id=request.user.family_id)
+        serializer = RoutinSerializer(queryset, many=True)
+        response_data = serializer.data
+        return Response(response_data, status=status.HTTP_202_ACCEPTED)
+    except Exception as e:
+        response_data = {'error': str(e)}
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def create_routin(request):
+    try:
+        serializer = RoutinSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.create(request.user.family_id)
+            response_data = {'message': CREATE_SUCCESS_MESSAGE}
+            return Response(response_data, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        response_data = {'error': str(e)}
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['PUT'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_routin(request, pk):
+    try:
+        routin = Routin.objects.get(pk=pk)
+        serializer = RoutinSerializer()
+        serializer.update(routin=routin, data=request.data)
+        response_data = {"message": UPDATE_SUCCESS_MESSAGE}
+        return Response(response_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        response_data = {'error': str(e)}
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -117,4 +178,9 @@ class UserViewSet(viewsets.ModelViewSet):
 class FamilyViewSet(viewsets.ModelViewSet):
     queryset = Family.objects.all()
     serializer_class = FamilySerializer
+    permission_classes = [IsAuthenticated]
+
+class RoutinViewSet(viewsets.ModelViewSet):
+    queryset = Routin.objects.all()
+    serializer_class = RoutinSerializer
     permission_classes = [IsAuthenticated]

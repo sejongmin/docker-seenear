@@ -1,21 +1,9 @@
 from django.urls import path, register_converter
 from converters import (DateConverter, YearMonthConverter)
-from .views import (
-    create_post,
-    update_post,
-    get_posts,
-    get_report,
-    get_reports,
-    get_week_report,
-    PostViewSet
-    )
+from .views import *
 
 register_converter(DateConverter, "date")
 register_converter(YearMonthConverter, "year-month")
-post_detail = PostViewSet.as_view({
-    "get": "retrieve",
-    "delete": "destroy"
-})
 
 urlpatterns = [
     path('posts/create', create_post, name="create-post"),
@@ -24,13 +12,18 @@ urlpatterns = [
     path('posts/update/<int:pk>/', update_post, name="update-post"),
     path("posts/<date:date>", get_posts, name="get-posts"),
     path("posts/<date:date>/", get_posts, name="get-posts"),
-    path("posts/<int:pk>", post_detail, name="post-detail"),
-    path("posts/<int:pk>/", post_detail, name="post-detail"),
 
-    path("reports/<date:date>", get_report, name="get-report"),
-    path("reports/<date:date>/", get_report, name="get-report"),
-    path("reports/<year-month:date>", get_reports, name="get-reports"),
-    path("reports/<year-month:date>/", get_reports, name="get-reports"),
-    path("reports/week/<date:start>", get_week_report, name="get-week-report"),
-    path("reports/week/<date:start>/", get_week_report, name="get-week-report"),
+    path("day/<date:date>", get_report, name="get-day"),
+    path("day/<date:date>/", get_report, name="get-day"),
+    path("day/<year-month:date>", get_reports, name="get-days"),
+    path("day/<year-month:date>/", get_reports, name="get-days"),
+
+    path("week/count/<date:start>", get_week_counts, name="get-week-count"),
+    path("week/count/<date:start>/", get_week_counts, name="get-week-count"),
+    path("week/mean/<date:start>", get_week_means, name="get-week-mean"),
+    path("week/mean/<date:start>/", get_week_means, name="get-week-mean"),
+    path("week/var/<date:start>", get_week_variances, name="get-week-variance"),
+    path("week/var/<date:start>/", get_week_variances, name="get-week-variance"),
+
+    path("dummy/<year-month:date>", create_dummy_data, name="create-dummy"),
 ]

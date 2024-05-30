@@ -1,10 +1,6 @@
 from django.urls import path, register_converter
 from converters import DateConverter
-from .views import (
-    create_event, 
-    get_events, 
-    EventViewSet
-    )
+from .views import *
 
 register_converter(DateConverter, "date")
 event_detail = EventViewSet.as_view({

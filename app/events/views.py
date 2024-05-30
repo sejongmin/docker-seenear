@@ -6,21 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Event
 from .serializers import EventSerializer
-
-@api_view(["POST"])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def create_event(request):
-    serializer = EventSerializer(data=request.data)
-    
-    if serializer.is_valid():
-        event = serializer.create(request.user.family_id)
-        response_data = serializer.data
-        response_data['id'] = event.id
-        return Response(response_data, status=status.HTTP_201_CREATED)
-    
-    response_data = {'error': serializer.errors}
-    return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+from constant.events import *
 
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
@@ -34,10 +20,24 @@ def get_events(request, date):
         serializer = EventSerializer(queryset, many=True)
         response_data = serializer.data
         return Response(response_data, status=status.HTTP_200_OK)
-    except Exception:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    
+    except Exception as e:
+        response_data = {'error': str(e)}
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(["POST"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def create_event(request):
+    try:
+        serializer = EventSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.create(request.user.family_id)
+            response_data = {'message': CREATE_SUCCESS_MESSAGE}
+            return Response(response_data, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        response_data = {'error': str(e)}
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+    
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer

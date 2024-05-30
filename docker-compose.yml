@@ -1,0 +1,32 @@
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    env_file:
+      - .env.dev
+    volumes:
+      - .:/code
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - migrate
+
+  migrate:
+    build: ./app
+    env_file:
+      - .env.dev
+    volumes:
+      - .:/code
+    command: python manage.py migrate --run-syncdb
+    depends_on:
+      - makemigrations
+
+  makemigrations:
+    build: ./app
+    env_file:
+      - .env.dev
+    volumes:
+      - .:/code
+    command: python manage.py makemigrations

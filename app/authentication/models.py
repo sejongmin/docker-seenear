@@ -26,7 +26,7 @@ class Family(models.Model):
     def __str__(self):
         return self.id
 
-class Routin(models.Model):
+class Routine(models.Model):
     family_id = models.ForeignKey("Family", related_name="routin", on_delete=models.SET_NULL, db_column="family_id", null=True)
     name = models.CharField(max_length=20, default="")
     time = models.TimeField(null=True)

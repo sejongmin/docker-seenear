@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 
 router = DefaultRouter()
-routin_detail = RoutinViewSet.as_view({
+routin_detail = RoutineViewSet.as_view({
     "get": "retrieve",
     "put": "update",
     "delete": "destroy"
@@ -26,10 +26,10 @@ urlpatterns = [
     path('family/update', update_family),
     path('family/update/', update_family),
 
-    path('routin', get_routins),
-    path('routin/', get_routins),
-    path('routin/create', create_routin),
-    path('routin/create/', create_routin),
-    path('routin/<int:pk>', routin_detail),
-    path('routin/<int:pk>/', routin_detail),
+    path('routine', get_routines),
+    path('routine/', get_routines),
+    path('routine/create', create_routine),
+    path('routine/create/', create_routine),
+    path('routine/<int:pk>', routin_detail),
+    path('routine/<int:pk>/', routin_detail),
 ]

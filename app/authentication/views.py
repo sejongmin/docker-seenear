@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Family, Routin
-from .serializers import UserSerializer, FamilySerializer, MemberSerializer, RoutinSerializer
+from .models import User, Family, Routine
+from .serializers import UserSerializer, FamilySerializer, MemberSerializer, RoutineSerializer
 from constant.authentication import *
 
 @api_view(['POST'])
@@ -132,10 +132,10 @@ def get_members(request):
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def get_routins(request):
+def get_routines(request):
     try:
-        queryset = Routin.objects.filter(family_id=request.user.family_id)
-        serializer = RoutinSerializer(queryset, many=True)
+        queryset = Routine.objects.filter(family_id=request.user.family_id)
+        serializer = RoutineSerializer(queryset, many=True)
         response_data = serializer.data
         return Response(response_data, status=status.HTTP_202_ACCEPTED)
     except Exception as e:
@@ -145,9 +145,9 @@ def get_routins(request):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def create_routin(request):
+def create_routine(request):
     try:
-        serializer = RoutinSerializer(data=request.data)
+        serializer = RoutineSerializer(data=request.data)
         if serializer.is_valid():
             serializer.create(request.user.family_id)
             response_data = {'message': CREATE_SUCCESS_MESSAGE}
@@ -159,11 +159,11 @@ def create_routin(request):
 @api_view(['PUT'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def update_routin(request, pk):
+def update_routine(request, pk):
     try:
-        routin = Routin.objects.get(pk=pk)
-        serializer = RoutinSerializer()
-        serializer.update(routin=routin, data=request.data)
+        routine = Routine.objects.get(pk=pk)
+        serializer = RoutineSerializer()
+        serializer.update(routine=routine, data=request.data)
         response_data = {"message": UPDATE_SUCCESS_MESSAGE}
         return Response(response_data, status=status.HTTP_200_OK)
     except Exception as e:
@@ -180,7 +180,7 @@ class FamilyViewSet(viewsets.ModelViewSet):
     serializer_class = FamilySerializer
     permission_classes = [IsAuthenticated]
 
-class RoutinViewSet(viewsets.ModelViewSet):
-    queryset = Routin.objects.all()
-    serializer_class = RoutinSerializer
+class RoutineViewSet(viewsets.ModelViewSet):
+    queryset = Routine.objects.all()
+    serializer_class = RoutineSerializer
     permission_classes = [IsAuthenticated]

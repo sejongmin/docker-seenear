@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Family, Routin
+from .models import User, Family, Routine
 from events.models import Event
 
 @admin.register(User)
@@ -22,7 +22,7 @@ class UserInLine(admin.TabularInline):
     ]
 
 class RoutinInLine(admin.TabularInline):
-    model = Routin
+    model = Routine
     extra = 0
 
     fieldsets = [

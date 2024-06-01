@@ -104,7 +104,6 @@ DATABASES = {
         'PASSWORD': SQL_PASSWORD,
         'HOST': SQL_HOST,
         'PORT': SQL_PORT,
-        # 'OPTIONS': {"charset": "utf8mb4"}
     }
 }
 

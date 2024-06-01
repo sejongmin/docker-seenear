@@ -25,12 +25,10 @@ urlpatterns = [
     path("day/<year-month:date>", get_reports, name="get-days"),
     path("day/<year-month:date>/", get_reports, name="get-days"),
 
-    path("week/count/<date:start>", get_week_counts, name="get-week-count"),
-    path("week/count/<date:start>/", get_week_counts, name="get-week-count"),
-    path("week/mean/<date:start>", get_week_means, name="get-week-mean"),
-    path("week/mean/<date:start>/", get_week_means, name="get-week-mean"),
-    path("week/var/<date:start>", get_week_variances, name="get-week-variance"),
-    path("week/var/<date:start>/", get_week_variances, name="get-week-variance"),
+    path("week/<date:start>", get_week, name="get-week-count"),
+    path("week/<date:start>/", get_week, name="get-week-count"),
+    # path("week/keyword/<date:start>", get_word_cloud, name="get-word-cloud"),
+    # path("week/keyword/<date:start>/", get_word_cloud, name="get-word-cloud"),
 
     path("dummy/<year-month:date>", create_dummy_data, name="create-dummy"),
 ]

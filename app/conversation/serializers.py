@@ -41,7 +41,7 @@ class PostSerializer(serializers.ModelSerializer):
             family_id = family,
             date = data["date"],
             content = data["content"],
-            keyword = data["keyword"],
+            keyword = data["keyword"][0][0] + " " + data["keyword"][1][0] + " " + data["keyword"][2][0],
             emotion = np.argmax(data["emotion"]),
             emotion_0 = data["emotion"][0][0],
             emotion_1 = data["emotion"][0][1],

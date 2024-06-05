@@ -21,12 +21,12 @@ class UserInLine(admin.TabularInline):
         (None, {"fields": ["username", "role", "first_name", "last_name"]})
     ]
 
-class RoutinInLine(admin.TabularInline):
+class RoutineInLine(admin.TabularInline):
     model = Routine
     extra = 0
 
     fieldsets = [
-        (None, {"fields": ["name", "time", "is_active"]})
+        (None, {"fields": ["name", "time"]})
     ]
 
 class EventInLine(admin.TabularInline):
@@ -43,7 +43,7 @@ class FamilyAdmin(admin.ModelAdmin):
     inlines = [
         UserInLine,
         EventInLine,
-        RoutinInLine
+        RoutineInLine
     ]
     fieldsets = [
         (None, {"fields": ("senior_id",)}),

@@ -10,9 +10,9 @@ AUDIO_RESPONSE_FORMAT = 'wav'
 
 # models.py Dayreport Emotion Choice
 EMOTION_CHOICES = [
-    (0, "neutral"),
-    (1, "angry"),
-    (2, "sad"),
+    (0, "angry"),
+    (1, "sad"),
+    (2, "neutral"),
     (3, "happy")
 ]
 
@@ -29,6 +29,14 @@ MAX_LENGTH = 100
 # keyword_extraction.py constant
 KEYWORD_MODEL = 'skt/kobert-base-v1'
 ENCODING = 'utf-8'
+
+# create_wordcloud.py constant
+BACKGROUND_COLOR = "white"
+MAX_WORDS = 150
+WIDTH = 500
+HEIGHT = 500
+FONT_PATH = "media/AppleGothic.ttf"
+WORDCLOUD_PATH = "media/wordcloud.png"
 
 # views.py constant
 TEXT_PATH = 'media/text.txt'

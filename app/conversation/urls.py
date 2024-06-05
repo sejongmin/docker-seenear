@@ -27,8 +27,9 @@ urlpatterns = [
 
     path("week/<date:start>", get_week, name="get-week-count"),
     path("week/<date:start>/", get_week, name="get-week-count"),
-    # path("week/keyword/<date:start>", get_word_cloud, name="get-word-cloud"),
-    # path("week/keyword/<date:start>/", get_word_cloud, name="get-word-cloud"),
+    path("week/keyword/<date:start>", get_word_cloud, name="get-word-cloud"),
+    path("week/keyword/<date:start>/", get_word_cloud, name="get-word-cloud"),
 
     path("dummy/<year-month:date>", create_dummy_data, name="create-dummy"),
+    path("dummy/<year-month:date>/", create_dummy_data, name="create-dummy"),
 ]

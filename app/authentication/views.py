@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.db.models import Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
@@ -96,7 +97,10 @@ def join_family(request):
 def get_family(request):
     try:
         serializer = FamilySerializer(request.user.family_id)
+        family = Family.objects.get(id=request.user.family_id)
         response_data = serializer.data
+        response_data["last_nane"] = family.senior_id.last_name
+        response_data["first_name"] = family.senior_id.first_name
         return Response(response_data, status=status.HTTP_200_OK)
     except Exception as e:
         response_data = {'error': str(e)}
@@ -121,7 +125,8 @@ def update_family(request):
 @permission_classes([IsAuthenticated])
 def get_members(request):
     try:
-        queryset = User.objects.filter(family_id=request.user.family_id)
+        family = Family.objects.get(id=request.user.family_id)
+        queryset = User.objects.filter(~Q(id=family.senior_id.id) & Q(family_id=request.user.family_id))
         serializer = MemberSerializer(queryset, many=True)
         response_data = serializer.data
         return Response(response_data, status=status.HTTP_200_OK)

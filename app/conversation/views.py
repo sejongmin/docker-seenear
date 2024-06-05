@@ -3,6 +3,7 @@ import calendar
 import datetime
 import numpy as np
 from django.db.models import Q
+from django.http import FileResponse
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -20,10 +21,8 @@ def create_post(request):
     try:
         serializer = PostSerializer()
         post = serializer.create(request.user.family_id)
-
         response_data = {"id": post.id}
         return Response(response_data, status=status.HTTP_201_CREATED)
-    
     except Exception as e:
         response_data = {'error': str(e)}
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
@@ -194,7 +193,10 @@ def get_word_cloud(request, start):
             except DayReport.DoesNotExist:
                 continue
         createWordCloud(keywords)
-        # 이미지 통신
+        f = open(WORDCLOUD_PATH, "rb")
+        image_response = FileResponse(f)
+        image_response.set_headers(f)
+        return image_response
     except Exception as e:
         response_data = {'error': str(e)}
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)

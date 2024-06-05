@@ -27,10 +27,9 @@ class Family(models.Model):
         return self.id
 
 class Routine(models.Model):
-    family_id = models.ForeignKey("Family", related_name="routin", on_delete=models.SET_NULL, db_column="family_id", null=True)
+    family_id = models.ForeignKey("Family", related_name="routine", on_delete=models.SET_NULL, db_column="family_id", null=True)
     name = models.CharField(max_length=20, default="")
     time = models.TimeField(null=True)
-    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

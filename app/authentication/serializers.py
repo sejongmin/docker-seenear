@@ -58,14 +58,13 @@ class MemberSerializer(serializers.ModelSerializer):
 class RoutineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Routine
-        fields = ("id", "name", "time", "is_active")
+        fields = ("id", "name", "time")
 
     def create(self, family):
         family = Family.objects.get(id=family)
-        new_routin = Routine.objects.create(
+        new_routine = Routine.objects.create(
             family_id = family,
             name = self.validated_data["name"],
-            time = self.validated_data["time"],
-            is_active = True
+            time = self.validated_data["time"]
         )
-        new_routin.save()
+        new_routine.save()

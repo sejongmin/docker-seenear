@@ -35,7 +35,7 @@ BACKGROUND_COLOR = "white"
 MAX_WORDS = 150
 WIDTH = 500
 HEIGHT = 500
-FONT_PATH = "media/AppleGothic.ttf"
+FONT_PATH = "media/NanumGothicBold.ttf"
 WORDCLOUD_PATH = "media/wordcloud.png"
 
 # views.py constant

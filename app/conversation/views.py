@@ -2,6 +2,7 @@ import os
 import calendar
 import datetime
 import numpy as np
+from collections import Counter
 from django.db.models import Q
 from django.http import FileResponse
 from rest_framework import status, viewsets
@@ -115,6 +116,13 @@ def createResponseData(option, id, values):
             value = values[i]
             data[key] = value
     return data
+
+def createResponseKeywords(keywords):
+    data = []
+    counter = Counter(keywords.split()).most_common(3)
+    for i in range(3):
+        data.append({"id": i, "keyword": counter[i][0]})
+    return data
     
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
@@ -122,6 +130,7 @@ def createResponseData(option, id, values):
 def get_week(request, start):
     try:
         counts_data, means_data, variances_data = [], [], []
+        keywords = ""
         for i in range(7):
             date = start + datetime.timedelta(days=i)
             posts = Post.objects.filter(Q(family_id=request.user.family_id) & Q(date=date))
@@ -129,6 +138,7 @@ def get_week(request, start):
                 report = DayReport.objects.get(family_id=request.user.family_id, date=date)
                 count_data = createResponseData("count", i + 1, [report.emotion_0_count, report.emotion_1_count, report.emotion_2_count, report.emotion_3_count])
                 mean_data = createResponseData("mean", i + 1, [report.emotion_0_mean, report.emotion_1_mean, report.emotion_2_mean, report.emotion_3_mean])
+                keywords += report.keywords
                 deviation = [0, 0, 0, 0]
                 for post in posts:
                     deviation[0] += (post.emotion_0 - report.emotion_0_mean) ** 2
@@ -144,7 +154,8 @@ def get_week(request, start):
             counts_data.append(count_data)
             means_data.append(mean_data)
             variances_data.append(variance_data)
-            response_data = {"counts": counts_data, "averages": means_data, "variances": variances_data}
+        keywords_data = createResponseKeywords(keywords)
+        response_data = {"keywords": keywords_data, "counts": counts_data, "averages": means_data, "variances": variances_data}
         return Response(response_data, status=status.HTTP_200_OK)
     except Exception as e:
         response_data = {'error': str(e)}
